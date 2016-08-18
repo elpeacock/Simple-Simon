@@ -18,7 +18,7 @@ h1 {
     border: 5px solid black;
     border-radius: 15px;
     margin: auto;
-    background-color: rgba(105, 105, 105, .5);
+    background-color: rgba(105, 105, 105, .75);
 }
 
 .simon-button {
@@ -26,7 +26,8 @@ h1 {
     width: 200px;
     margin: 30px;
     border: 3px solid black;
-    border-radius: 10px
+    border-radius: 10px;
+    opacity: .45;
 }
 
 .btn {
@@ -36,7 +37,7 @@ h1 {
 }
 
 #red {
-    background-color: #B02C07;
+    background-color: hotpink;
     float: right; 
 }
 
@@ -46,12 +47,12 @@ h1 {
 }
 
 #green {
-    background-color: #1FA35D;
+    background-color: #18DB28;
     float: right;
     margin-top: 0px
 }
 
 #blue {
-    background-color: #204B96;
+    background-color: #0C14F0;
     clear: left;
 }
