@@ -2,7 +2,9 @@
 
 // (function (){
 var givenSequence = [];
+// var playerSequence = [];
 var randomButtonValue = '';
+var i = 0;
 
 /////Start button starts game
 $(".btn").click(function(e){
@@ -34,7 +36,7 @@ function getSequence(){
     givenSequence.push(randomButtonValue);
     console.log (givenSequence);
     playSequence();
-        // if (givenSequence == userSequence){
+        // if (givenSequence == playerSequence){
         //     randomize();  
         // } else {
         //     alert("nope. start over.");
@@ -44,8 +46,8 @@ function getSequence(){
 
 function playSequence(){
     givenSequence.forEach(function(givenValue, index){
+        console.log(givenValue, index);
         setTimeout(function(){
-            console.log(givenValue);
             switch (givenValue){
                 case "1": 
                     $("#red").animate({
@@ -79,14 +81,48 @@ function playSequence(){
         }, (1000 * index));
 
     });
+    playerInput();
+};
+
+////need to compare given sequence to buttons pushed - if match, keep going. no match - start over
+//////need to record user clicks 
+function playerInput(){
+    $(".button").click(function(e){
+        var pressedButton = $(this).data('value');
+        // get the required button from randomly generated sequence
+        var requiredButton = givenSequence[i];
+        console.log(pressedButton, requiredButton);
+        // compare the button pressed with the required button
+        if (pressedButton == requiredButton) {
+            // move to the next index of required button 
+            i += 1;
+            console.log("after +=: " + i);
+
+            // if the last button is reached, call new round
+            if (i == givenSequence.length){
+                newRound();
+            
+            } else {
+                alert ("button press fail! You lose.");
+                i = 0;
+            };
+
+        
+        };
     
+    });
+};
+
+////keep track of how many sequences (rounds) have been completed
+function newRound(){
+    /////need to reset i to 0
+    i = 0;
+    console.log(i)
+    ////need to add another selection to the array 
+    randomize();
 };
 
 
-
-
-////need to compare given sequence to buttons pushed - if match, keep going. no match - start over
-    ////keep track of how many sequences (rounds) have been completed
 
 
 
