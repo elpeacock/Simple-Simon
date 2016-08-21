@@ -2,16 +2,21 @@
 
 // (function (){
 var givenSequence = [];
-// var playerSequence = [];
+var playerSequence = [];
 var randomButtonValue = '';
 var i = 0;
+var round = 1;
 
 /////Start button starts game
 $(".btn").click(function(e){
     ///call randomize function to start sequence
     randomize();
-    // getSequence();
+    ////////add round count to html
+    $(".round").append("<h2>" + "Round: " + round + "</h2>");
+    ///////makes it so you can only click start button once
+    $(".btn").hide();
 });
+
 
 ////Add click functionality to each button (<div>)
 ////make the buttons "light up" when selected/pushed
@@ -20,33 +25,27 @@ $(".simon-button").mousedown(function(){
     $(this).css("opacity", "1");
 }).mouseup(function(){
     $(this).css("opacity", ".45");
-    ////record button clicked 
 });
 
 /////randomize button picks, math.random??
 
 function randomize(){
+    i = 0;
     randomButtonValue = Math.floor((Math.random() * 4) + 1).toString();
-    console.log (randomButtonValue);
     getSequence();
 };
     ////would need number associated with each button. assign a value? difference between data-value and value attribute in HTML
-    ////add each new random button pick to the end of the sequence and save the new sequence
+
+////add each new random button pick to the end of the sequence and save the new sequence
 function getSequence(){
     givenSequence.push(randomButtonValue);
     console.log (givenSequence);
     playSequence();
-        // if (givenSequence == playerSequence){
-        //     randomize();  
-        // } else {
-        //     alert("nope. start over.");
-        //     givenSequence = [];
-        // };
 };
 
+/////this plays the given sequence
 function playSequence(){
     givenSequence.forEach(function(givenValue, index){
-        console.log(givenValue, index);
         setTimeout(function(){
             switch (givenValue){
                 case "1": 
@@ -84,43 +83,58 @@ function playSequence(){
     playerInput();
 };
 
-////need to compare given sequence to buttons pushed - if match, keep going. no match - start over
 //////need to record user clicks 
 function playerInput(){
     $(".button").click(function(e){
-        var pressedButton = $(this).data('value');
-        // get the required button from randomly generated sequence
-        var requiredButton = givenSequence[i];
-        console.log(pressedButton, requiredButton);
-        // compare the button pressed with the required button
-        if (pressedButton == requiredButton) {
-            // move to the next index of required button 
-            i += 1;
-            console.log("after +=: " + i);
-
-            // if the last button is reached, call new round
-            if (i == givenSequence.length){
-                newRound();
-            
-            } else {
-                alert ("button press fail! You lose.");
-                i = 0;
-            };
-
-        
-        };
-    
+        var pressedButton = $(this).data('value').toString();
+        playerSequence.push(pressedButton);
     });
+
+////need to compare given sequence to user sequence - if match, keep going. no match - start over
+    //get the required button from randomly generated sequence
+    var requiredButton = givenSequence[i];
+    var playerButton = playerSequence[i];
+    // compare the button pressed with the required button
+    if (playerButton == requiredButton) {
+        console.log(playerButton, requiredButton);
+        // move to the next index of required button 
+        i += 1;
+        console.log("after +=: " + i);
+
+        // if the last button is reached, increment/update round count
+        if (givenSequence.length == playerSequence.length){
+            round += 1;
+            $(".round").html("<h2>" + "Round: " + round + "</h2>");
+            /////clear out player sequence
+            playerSequence = [];
+        };
+        ////if both conditions are met, call randomize to add another piece to sequence
+        randomize();
+    } else {
+        alert ("button press fail! You lose.");
+        /////return index to zero
+        i = 0;
+        /////return given sequence to empty array
+        givenSequence = [];
+        /////return round count to 1
+        round = 1;
+        ////show start button aagain
+        $(".btn").show();
+
+
+    };
 };
 
-////keep track of how many sequences (rounds) have been completed
-function newRound(){
-    /////need to reset i to 0
-    i = 0;
-    console.log(i)
-    ////need to add another selection to the array 
-    randomize();
-};
+
+
+
+
+
+
+
+
+
+
 
 
 
