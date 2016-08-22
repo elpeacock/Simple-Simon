@@ -1,129 +1,103 @@
 "use strict"
 
-// (function (){
-var givenSequence = [];
-var playerSequence = [];
-var randomButtonValue = '';
-var i = 0;
-var round = 1;
+$(document).ready(function(){
 
-/////Start button starts game
-$(".btn").click(function(e){
-    ///call randomize function to start sequence
-    randomize();
-    ////////add round count to html
-    $(".round").append("<h2>" + "Round: " + round + "</h2>");
-    ///////makes it so you can only click start button once
-    $(".btn").hide();
-});
+//////////////////////////////////global variables////////////////////////////////
 
+    var givenSequence = [];
+    var randomButtonValue = '';
+    var i = 0;
+    var round = 1;
+    var buttonTrigger = false;
 
-////Add click functionality to each button (<div>)
-////make the buttons "light up" when selected/pushed
-    ////maybe start with buttons at 50% opacity? click down = toggle to 100% on click/select? click up = then go back to 50%
-$(".simon-button").mousedown(function(){
-    $(this).css("opacity", "1");
-}).mouseup(function(){
-    $(this).css("opacity", ".45");
-});
+///////////////////////////////////start button///////////////////////////////////
 
-/////randomize button picks, math.random??
-
-function randomize(){
-    i = 0;
-    randomButtonValue = Math.floor((Math.random() * 4) + 1).toString();
-    getSequence();
-};
-    ////would need number associated with each button. assign a value? difference between data-value and value attribute in HTML
-
-////add each new random button pick to the end of the sequence and save the new sequence
-function getSequence(){
-    givenSequence.push(randomButtonValue);
-    console.log (givenSequence);
-    playSequence();
-};
-
-/////this plays the given sequence
-function playSequence(){
-    givenSequence.forEach(function(givenValue, index){
-        setTimeout(function(){
-            switch (givenValue){
-                case "1": 
-                    $("#red").animate({
-                        opacity: "1"
-                    }, 500).animate({
-                        opacity: ".45"
-                    }, 0);
-                    break;
-                case "2": 
-                    $("#yellow").animate({
-                        opacity: "1"
-                    }, 500).animate({
-                        opacity: ".45"
-                    }, 0);
-                    break;
-                case "3": 
-                    $("#green").animate({
-                        opacity: "1"
-                    }, 500).animate({
-                        opacity: ".45"
-                    }, 0);
-                    break;
-                case "4": 
-                    $("#blue").animate({
-                        opacity: "1"
-                    }, 500).animate({
-                        opacity: ".45"
-                    }, 0);
-                    break; 
-            };   
-        }, (1000 * index));
-
-    });
-    playerInput();
-};
-
-//////need to record user clicks 
-function playerInput(){
-    $(".button").click(function(e){
-        var pressedButton = $(this).data('value').toString();
-        playerSequence.push(pressedButton);
-    });
-
-////need to compare given sequence to user sequence - if match, keep going. no match - start over
-    //get the required button from randomly generated sequence
-    var requiredButton = givenSequence[i];
-    var playerButton = playerSequence[i];
-    // compare the button pressed with the required button
-    if (playerButton == requiredButton) {
-        console.log(playerButton, requiredButton);
-        // move to the next index of required button 
-        i += 1;
-        console.log("after +=: " + i);
-
-        // if the last button is reached, increment/update round count
-        if (givenSequence.length == playerSequence.length){
-            round += 1;
-            $(".round").html("<h2>" + "Round: " + round + "</h2>");
-            /////clear out player sequence
-            playerSequence = [];
-        };
-        ////if both conditions are met, call randomize to add another piece to sequence
-        randomize();
-    } else {
-        alert ("button press fail! You lose.");
-        /////return index to zero
-        i = 0;
-        /////return given sequence to empty array
+    $("#start").click(function(e){
         givenSequence = [];
-        /////return round count to 1
+        i = 0;
         round = 1;
-        ////show start button aagain
-        $(".btn").show();
+        randomize(); 
+        givenSequence.push(randomButtonValue);
+        console.log (givenSequence);
+        $("#start").hide();
+        $('.round').html('<h2>' + "Round: " + round + '</h2>');
+        playSequence();
+    });
 
 
+////////////////////////////////////button light up function////////////////////////////////
+    ////make the buttons "light up" when selected/pushed
+        ////maybe start with buttons at 50% opacity? click down = toggle to 100% on click/select? click up = then go back to 50%
+    function lightUp(value) {
+        $('[data-value=' + (value) + ']').animate({
+            'opacity': '1'
+        }, 500).animate({
+            'opacity': '.45'
+        }, 0);
     };
-};
+
+//////////////////////////////////////randomize button picks/////////////////////////////////
+    /////randomize button picks, math.random??
+
+    function randomize(){
+        randomButtonValue = Math.floor((Math.random() * 4) + 1).toString();
+        return randomButtonValue;
+    };
+        ////would need number associated with each button. assign a value? difference between data-value and value attribute in HTML
+
+///////////////////////////////////////starts a new round////////////////////////////////////    
+
+    function newRound() {
+        randomize();
+        givenSequence.push(randomButtonValue);
+        console.log (givenSequence);
+        setTimeout(function(){
+            playSequence();
+        }, 500);
+        round += 1;
+        $('.round').html('<h2>' + "Round: " + round + '</h2>');
+    };
+
+//////////////////////////////////plays the simon sequence////////////////////////////////////////
+
+    function playSequence(){
+        givenSequence.forEach(function(element, index){
+            setTimeout(function(){
+                lightUp(element);
+            }, (500 * index));
+
+        });
+        setTimeout(function(){
+            buttonTrigger = true;
+        }, (500 * (givenSequence.length)));
+    };
+
+////////////////////////////////compares button clicks to simon sequence/////////////////////////
+
+    $(".simon-button").click(function(){
+        if (buttonTrigger) {
+            lightUp($(this).data('value'));
+            if (givenSequence[i] == $(this).data('value')){
+                i += 1;
+                console.log("yes.");
+            } else {
+                i = 0; 
+                alert ("button fail. click start to retry.");
+                buttonTrigger = false;
+                round = 1;
+                $('#start').show();
+            };
+
+            if (i == givenSequence.length) {
+                buttonTrigger = false;
+                console.log ("yes. reset.");
+                i = 0;
+                newRound();
+            };
+        };
+    });
+
+});
 
 
 
@@ -146,4 +120,3 @@ function playerInput(){
 
 
 
-// })();
